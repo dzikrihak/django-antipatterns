@@ -1,0 +1,187 @@
+<!doctype html>
+<htm lang="en">
+<head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Content-Security-Policy" content="frame-src https://www.buymeacoffee.com; style-src 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.rawgit.com https://vjs.zencdn.net 'self'; script-src 'sha256-nP0EI9B9ad8IoFUti2q7EQBabcE5MS5v0nkvRfUbYnM=' https://cdnjs.buymeacoffee.com https://code.jquery.com https://cdnjs.cloudflare.com https://cdn.rawgit.com https://vjs.zencdn.net https://pagead2.googlesyndication.com 'self'">
+        <!--[if lt IE 9]>
+                <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+        <![endif]-->
+    <meta name="keywords" content="Django, web, programming, antipattern, pattern, troubleshooting, software design, django-models, django-views, django-templates, django-orm">
+    <meta name="author" content="Willem Van Onsem">
+    <meta name="description" content="A set of Django (anti)patterns: patterns and things to avoid when building a web application with Django.">
+    <meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/257009680/7a954900-2f5d-11eb-8d0a-c8af0596107f" />
+    <meta name="og:title" content="Set values to a created/updated object in a class-based view" />
+    <meta name="og:image" content="https://repository-images.githubusercontent.com/257009680/7a954900-2f5d-11eb-8d0a-c8af0596107f" />
+    <meta name="og:image:alt" content="A prohibition sign in the Django color scheme." />
+    <meta name="og:image:type" content="image/png" />
+    <meta name="og:type" content="website" />
+
+    <!-- <link rel="stylesheet" type="text/css" href="template.css" /> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/template.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+    <link href="https://vjs.zencdn.net/5.4.4/video-js.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- <script type='text/javascript' src='menu/js/jquery.cookie.js'></script> -->
+    <!-- <script type='text/javascript' src='menu/js/jquery.hoverIntent.minified.js'></script> -->
+    <!-- <script type='text/javascript' src='menu/js/jquery.dcjqaccordion.2.7.min.js'></script> -->
+
+    <!-- <link href="menu/css/skins/blue.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="menu/css/skins/graphite.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="menu/css/skins/grey.css" rel="stylesheet" type="text/css" /> -->
+  
+    <!-- <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+        
+  
+    <!-- <script src="jquery.sticky-kit.js "></script> -->
+    <script type='text/javascript' src='https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/js/jquery.cookie.js'></script>
+    <script type='text/javascript' src='https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/js/jquery.hoverIntent.minified.js'></script>
+    <script type='text/javascript' src='https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/js/jquery.dcjqaccordion.2.7.min.js'></script>
+
+    <link href="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/css/skins/blue.css" rel="stylesheet" type="text/css" />
+    <link href="/style.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/css/skins/graphite.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/css/skins/grey.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.rawgit.com/ryangrose/easy-pandoc-templates/948e28e5/css/elegant_bootstrap.css" rel="stylesheet" type="text/css" />
+  
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script-->
+  
+    <!--script src="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/script.js"></script-->
+  
+    <script src="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/jquery.sticky-kit.js"></script>
+    <script data-ad-client="ca-pub-9962024266760159" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <meta name="generator" content="pandoc" />
+  <title>Django antipatterns &#x3009;pattern &#x3009;Set values to a created/updated object in a class-based view</title>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #0000ff; } /* Keyword */
+code > span.ch { color: #008080; } /* Char */
+code > span.st { color: #008080; } /* String */
+code > span.co { color: #008000; } /* Comment */
+code > span.ot { color: #ff4000; } /* Other */
+code > span.al { color: #ff0000; } /* Alert */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #008000; font-weight: bold; } /* Warning */
+code > span.cn { } /* Constant */
+code > span.sc { color: #008080; } /* SpecialChar */
+code > span.vs { color: #008080; } /* VerbatimString */
+code > span.ss { color: #008080; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #0000ff; } /* ControlFlow */
+code > span.op { } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ff4000; } /* Preprocessor */
+code > span.do { color: #008000; } /* Documentation */
+code > span.an { color: #008000; } /* Annotation */
+code > span.cv { color: #008000; } /* CommentVar */
+code > span.at { } /* Attribute */
+code > span.in { color: #008000; } /* Information */
+  </style>
+</head>
+<body>
+  <a class="github-fork-ribbon" href="https://github.com/hapytex/django-antipatterns" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+    
+    <div class="navbar navbar-static-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <span class="doc-title">Set values to a created/updated object in a class-based view</span>
+        <ul class="nav pull-right doc-info">
+                                      </ul>
+      </div>
+    </div>
+  </div>
+    <div class="container">
+    <div class="row">
+            <div class="span12">
+            <p>Often not all fields specified in a model are specified through a form. These for example originate for example through the path, or we make use of the logged in user. Take for example the following model:</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> django.conf <span class="im">import</span> settings
+<span class="im">from</span> django.db <span class="im">import</span> models
+
+<span class="kw">class</span> Comment(models.Model):
+    post <span class="op">=</span> models.ForeignKey(Post, on_delete<span class="op">=</span>models.CASCADE)
+    author <span class="op">=</span> models.ForeignKey(settings.AUTH_USER_MODEL, on_delete<span class="op">=</span>models.CASCADE)
+    comment <span class="op">=</span> models.CharField(max_length<span class="op">=</span><span class="dv">1024</span>)
+    posted_at <span class="op">=</span> models.DateTimeField(auto_now_add<span class="op">=</span><span class="va">True</span>)</code></pre></div>
+<p>The form will normally only take the <code>comment</code> as field, not the <code>post</code> and <code>author</code>. We can for example specify the primary key of the post in the path, and the author is normally the logged in user. The form thus looks like:</p>
+<pre class="python3"><code>from django import forms
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = [&#39;comment&#39;]</code></pre>
+<p>and the path to the view will have a primary key that specifies to what post we comment:</p>
+<pre class="python"><code>from django.urls import path
+from <i>app_name</i>.views import CreateCommentView
+
+urlpatterns = [
+    path('post/&lt;int:pk&gt;/comment', CreateCommentView.as_view()),
+]</code></pre>
+<h1 id="what-problems-are-solved-with-this">What problems are solved with this?</h1>
+<p>A class-based view is powerful, but it is often not entirely clear where to add certain logic to alter the code flow slightly. Often people will alter the entire <code>.post(…)</code> method. This destroys most of the boilerplate code in the view. This does not only mean the user needs to define a long view, but it is also likely that the user will not think about everything in advance. For example people often forget to pass <code>request.FILES</code> to the form.</p>
+<p>It also makes it easy to wrap the logic to &quot;<em>inject</em>&quot; data into the form instance through a <em>mixin</em>: this makes the logic to inject data more <em>reusable</em>.</p>
+<h1 id="what-does-this-pattern-look-like">What does this pattern look like?</h1>
+<p>We override the <a href="https://docs.djangoproject.com/en/dev/ref/class-based-views/mixins-editing/#django.views.generic.edit.FormMixin.form_valid"><strong><code>.form_valid(…)</code></strong> method [Django-doc]</a> of the view with the <code>FormMixin</code>, and there we can alter the <code>.instance</code> wrapped in the form, for example:</p>
+<pre class="python"><code>from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView
+from <i>app_name</i>.forms import CommentForm
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    form_class = CommentForm
+
+    def <b>form_valid</b>(self, form):
+        form<b>.instance.author = self.request.user</b>
+        form<b>.instance.post_id = self.kwargs['pk']</b>
+        return super().form_valid(form)</code></pre>
+<p>If we need the logic in multiple views, we can easily encapsulate this in a mixin, for example:</p>
+<pre class="python"><code>from django.contrib.auth.mixins import LoginRequiredMixin
+
+class SetAuthorMixin(LoginRequiredMixin):
+
+    def form_valid(self, form):
+        form<b>.instance.author = self.request.user</b>
+        return super().form_valid(form)</code></pre>
+<p>then the mixin can be used, for example in both views that create a <code>Post</code> and a <code>Comment</code>:</p>
+<pre class="python"><code>from django.views.generic.edit import CreateView
+from <i>app_name</i>.forms import CommentForm, PostForm
+
+class CommentCreateView(SetAuthorMixin, CreateView):
+    form_class = PostForm
+
+
+class CommentCreateView(SetAuthorMixin, CreateView):
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        form<b>.instance.post_id = self.kwargs['pk']</b>
+        return super().form_valid(form)</code></pre>
+<p>This not only makes it easier to reuse logic. It also makes it easier to fix a mistake: if the mistake is only made in one mixin, it is easy to fix the problem for all views with that logic, instead of searching for all views that implemented (variants) of that logic.</p>
+<p>For the Django admin, we can override the <a href="https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_model"><strong><code>.save_model</code></strong> method [Django-doc]</a>:</p>
+<pre class="python"><code>from django.contrib import admin
+
+class MyModelAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        obj<b>.author = request.user</b>
+        super().save_model(request, obj, form, change)</code></pre>
+<h1 id="extra-tips">Extra tips</h1>
+<p>For <code>DateTimeField</code>s and <code>DateField</code>s we can make use of the <a href="https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.DateField.auto_now_add"><strong><code>auto_now_add=…</code></strong> [Django-doc]</a> or <a href="https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.DateField.auto_now"><strong><code>auto_now=…</code></strong> [Django-doc]</a> can be used to automatically specify the current timestamp to specify when to <em>create</em> or <em>update</em> the object.</p>
+      <script nonce data-name="BMC-Widget" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="hapytex" data-description="Support me on Buy me a coffee!" data-message="Thank you for visiting." data-color="#FFDD00" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
