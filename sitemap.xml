@@ -49,6 +49,9 @@ http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"><url>
 <loc>https://www.django-antipatterns.com/antipatterns/return-a-jsonresponse-with-safe-false.html</loc>
 </url>
 <url>
+<loc>https://www.django-antipatterns.com/antipatterns/signals.html</loc>
+</url>
+<url>
 <loc>https://www.django-antipatterns.com/antipatterns/use-datetime-now-as-default-for-a-created-on-field.html</loc>
 </url>
 <url>

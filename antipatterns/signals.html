@@ -86,7 +86,7 @@
             <div class="span12">
             <p>Django has a sophisticated system to trigger certain logic when you save, delete, change many-to-many relations, etc. Very often people make use of such signals and for some edge-cases these are indeed the only effective solution, but there are only a few cases where using signals is appropriate.</p>
 <h1 id="why-is-it-a-problem">Why is it a problem?</h1>
-<p>Signals have a variety of problems and unforseen consequences. In the below sections, we list a few.</p>
+<p>Signals have a variety of problems and unforeseen consequences. In the below sections, we list a few.</p>
 <h2 id="signals-can-be-circumvented">Signals can be circumvented</h2>
 <p>One of the main problems with signals is that signals do <em>not</em> always run. Indeed the <code>pre_save</code> and <code>post_save</code> signals will <em>not</em> run when we save or update objects in bulk. For example if we create multiple <code>Post</code>s with:</p>
 <pre class="python"><code>Post.objects.<b>bulk_create(</b>[
@@ -128,7 +128,7 @@ def save_author(sender, instance, created, raw, using, update_fields):
     instance.num_books = instance.books.count()</code></pre>
 <p>Regardless whether we use a <code>pre_save</code> or <code>post_save</code> signal, at that moment in time <code>instance.books.all()</code> is an empty queryset.</p>
 <h2 id="signals-make-altering-objects-less-predictable">Signals make altering objects less predictable</h2>
-<p>Even if only one handler is attached to the the signal, and that handler can never raise an error, the handler still is often not an elegant solution. Another developer might not be aware of its existence, since it has only a &quot;weak&quot; binding to th model, and thus it makes the effect of saving an object less predictable.</p>
+<p>Even if only one handler is attached to the the signal, and that handler can never raise an error, the handler still is often not an elegant solution. Another developer might not be aware of its existence, since it has only a &quot;weak&quot; binding to the model, and thus it makes the effect of saving an object less predictable.</p>
 <h2 id="signals-do-not-run-when-other-programs-make-changes">Signals do not run when other programs make changes</h2>
 <p>Finally other programs can also make changes to the database, and thus will not trigger the signals, and this eventually could lead to the database being in an inconsistent state. Another program could for example create a new book for an author, but might not update the field in the <code>Author</code> model that keeps track of the number of books written by that author. It will be quite hard to &quot;translate&quot; all the handlers in Django to other programs that interact with the same database.</p>
 <h1 id="what-can-be-done-to-resolve-the-problem">What can be done to resolve the problem?</h1>
@@ -166,9 +166,7 @@ class MyModelAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         &lt;b&gt;update_book(&lt;/b&gt;obj&lt;b&gt;)&lt;/b&gt;
         super().save_model(request, obj, form, change)</code></pre>
-<h2 id="periodically-update-data">Periodically update data</h2>
-<p>If the data depends on updates of a related model, and somehow we can not run logic when objects of that model are updated, we might schedule a periodic task.</p>
-<h2 id="use-m2m_change-signals">Use <code>m2m_change</code> signals</h2>
+<p>If the task takes too much time, you can set up a queue where a message is queued that will then trigger a task to update the data. This is however not something specific to encapsulate logic into a function: if you work with signals, then these signals can go in timeout as well, and thus render the server irresponsive.</p>
 <h1 id="extra-tips">Extra tips</h1>
 <p>Signals can still be a good solution if you want to handle events raised by a <em>third party</em> Django application. In many cases, this is the only effective way to handle certain events. For example the <code>auth</code></p>
       <script nonce data-name="BMC-Widget" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="hapytex" data-description="Support me on Buy me a coffee!" data-message="Thank you for visiting." data-color="#FFDD00" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
